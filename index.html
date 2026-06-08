@@ -339,7 +339,7 @@
         /* ── STAT BLOCKS ── */
         .stat-row {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 1px;
             background: var(--border);
             border: 1px solid var(--border);
@@ -938,6 +938,278 @@
 
         .fadein {
             animation: fadeIn 0.3s ease both;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           RESPONSIVE — tablet & mobile
+        ══════════════════════════════════════════════════════════ */
+
+        /* ── Tablet (≤900px) ── */
+        @media (max-width: 900px) {
+            #app {
+                padding: 0 16px 60px;
+            }
+
+            .two-col,
+            .three-col {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .intro-banner {
+                flex-direction: column;
+                gap: 16px;
+                padding: 18px 20px;
+            }
+
+            .intro-pillars {
+                min-width: unset;
+                width: 100%;
+            }
+
+            .masthead-title {
+                font-size: 22px;
+            }
+
+            .masthead-right {
+                gap: 6px;
+            }
+
+            .status-pill {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
+        }
+
+        /* ── Mobile (≤640px) ── */
+        @media (max-width: 640px) {
+            html {
+                font-size: 13px;
+            }
+
+            #app {
+                padding: 0 12px 72px;
+            }
+
+            /* Masthead: stack vertically */
+            .masthead {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 14px 0 12px;
+            }
+
+            .masthead-right {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .status-pill {
+                flex: 1;
+                justify-content: center;
+                font-size: 9px;
+                padding: 5px 6px;
+            }
+
+            .masthead-title {
+                font-size: 20px;
+            }
+
+            .seal {
+                width: 40px;
+                height: 40px;
+                font-size: 17px;
+            }
+
+            /* Nav: horizontal scroll, no wrap */
+            .nav-tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                flex-wrap: nowrap;
+                margin-left: -12px;
+                margin-right: -12px;
+                padding: 0 12px;
+            }
+
+            .nav-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-tab {
+                padding: 11px 14px;
+                font-size: 10px;
+                letter-spacing: 0.05em;
+                flex-shrink: 0;
+            }
+
+            /* Stats: 2 columns on mobile */
+            .stat-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            /* Budget items: stack amount/pct below bar */
+            .budget-item {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .budget-dept {
+                min-width: unset;
+                width: 100%;
+                font-size: 12px;
+            }
+
+            .budget-bar-wrap {
+                order: 3;
+                width: 100%;
+                flex: unset;
+            }
+
+            .budget-amount {
+                min-width: unset;
+                font-size: 11px;
+                text-align: left;
+            }
+
+            .budget-pct {
+                min-width: unset;
+                font-size: 10px;
+            }
+
+            /* Vote rows: tighter layout */
+            .vote-row {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .vote-id {
+                min-width: unset;
+                width: 100%;
+            }
+
+            .vote-outcome {
+                margin-left: auto;
+            }
+
+            /* Policy nodes */
+            .policy-node {
+                flex-wrap: wrap;
+            }
+
+            .policy-agency {
+                min-width: unset;
+                width: 100%;
+            }
+
+            .policy-status-bar {
+                width: 100%;
+                flex: unset;
+            }
+
+            .policy-state {
+                min-width: unset;
+                text-align: left;
+            }
+
+            /* Audit entries */
+            .audit-time {
+                min-width: 44px;
+                font-size: 9px;
+            }
+
+            /* Card headers with action buttons */
+            .card-header {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            /* Inline forms: stack on very small screens */
+            .inline-form {
+                flex-direction: column;
+            }
+
+            .inline-form .btn {
+                width: 100%;
+            }
+
+            /* Intro banner */
+            .intro-banner {
+                padding: 14px 16px;
+                gap: 12px;
+            }
+
+            .intro-banner h2 {
+                font-size: 17px;
+            }
+
+            .intro-banner p {
+                font-size: 12px;
+            }
+
+            .pillar {
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+
+            /* Buttons full-width on small screens in card bodies */
+            .card-body .btn {
+                white-space: normal;
+                text-align: center;
+            }
+
+            /* Audit tab two-col card */
+            #tab-audit .two-col .card[style*="grid-column"] {
+                grid-column: 1;
+            }
+
+            /* Proof modal */
+            .proof-modal {
+                margin: 12px;
+            }
+
+            .proof-line {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .proof-key {
+                min-width: unset;
+            }
+
+            /* Chain strip blocks slightly smaller */
+            .chain-block {
+                padding: 5px 8px;
+                font-size: 8px;
+            }
+
+            /* Transfer form button row */
+            #tab-budget .card-body > div[style*="display:flex;gap:8px;margin-bottom"] {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* ── Very small phones (≤380px) ── */
+        @media (max-width: 380px) {
+            .stat-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .masthead-title {
+                font-size: 18px;
+            }
+
+            .nav-tab {
+                padding: 10px 11px;
+                font-size: 9px;
+            }
         }
     </style>
 </head>
