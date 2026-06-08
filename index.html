@@ -1648,6 +1648,7 @@
                 this._log = [];
                 this._proofChain = [];
                 this._current = new StampedState(GENESIS, new VectorClock(), id);
+                this._seedState = GENESIS;
                 this._seq = 0;
             }
             get state() {
@@ -1678,7 +1679,7 @@
             mergeRemote(r) {
                 this._current = merge(this._current, r._current);
             }
-            replay(log, start = GENESIS) {
+            replay(log, start = this._seedState) {
                 let c = start;
                 for (const ev of log) {
                     const r = this.registry[ev.name];
@@ -1688,7 +1689,7 @@
                 return c;
             }
             verify() {
-                let c = GENESIS;
+                let c = this._seedState;
                 const bad = [];
                 for (let i = 0; i < this._log.length; i++) {
                     const ev = this._log[i];
@@ -1842,7 +1843,9 @@
         };
         const seedBudgetState = new State(initBudget, null);
         budgetRuntime._current = new StampedState(seedBudgetState, new VectorClock(), "BUDGET_NODE_A");
+        budgetRuntime._seedState = seedBudgetState;
         budgetNodeB._current = new StampedState(seedBudgetState, new VectorClock(), "BUDGET_NODE_B");
+        budgetNodeB._seedState = seedBudgetState;
 
         // ── VOTE RUNTIME ──
         const voteRegistry = {
@@ -1911,6 +1914,7 @@
             },
         };
         voteRuntime._current = new StampedState(new State(initVotes, null), new VectorClock(), "VOTE_NODE");
+        voteRuntime._seedState = voteRuntime._current.state;
 
         // ── PERMIT RUNTIME ──
         const PERMIT_AUTH = {
@@ -2000,6 +2004,7 @@
             },
         };
         permitRuntime._current = new StampedState(new State(initPermits, null), new VectorClock(), "PERMIT_NODE");
+        permitRuntime._seedState = permitRuntime._current.state;
 
         // ── POLICY RUNTIME ──
         const policyRegistry = {
