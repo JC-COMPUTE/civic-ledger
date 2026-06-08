@@ -2099,6 +2099,7 @@
         }
 
         function shortH(h) {
+            if (!h) return "GENESIS";
             return h.slice(0, 8) + "…" + h.slice(-4);
         }
 
@@ -2432,7 +2433,7 @@
     <div class="stat-box"><div class="stat-label">Active Permits</div><div class="stat-value" style="color:var(--green)">${active}</div><div class="stat-sub">currently valid</div></div>
     <div class="stat-box"><div class="stat-label">Pending Review</div><div class="stat-value" style="color:var(--amber)">${pending}</div><div class="stat-sub">under review</div></div>
     <div class="stat-box"><div class="stat-label">Revoked</div><div class="stat-value" style="color:var(--red)">${revoked}</div><div class="stat-sub">on record</div></div>
-    <div class="stat-box"><div class="stat-label">Blocked Attempts</div><div class="stat-value" style="color:var(--red)" id="permit-blocked-count">0</div><div class="stat-sub">unauthorized issuances</div></div>
+    <div class="stat-box"><div class="stat-label">Blocked Attempts</div><div class="stat-value" style="color:var(--red)" id="permit-blocked-count">${permitBlockedCount}</div><div class="stat-sub">unauthorized issuances</div></div>
     <div class="stat-box"><div class="stat-label">Ledger Hash</div><div class="stat-value" style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--navy)">${shortH(permitRuntime.state.hash)}</div><div class="stat-sub">current root</div></div>`;
         }
         let permitBlockedCount = 0;
@@ -2551,7 +2552,7 @@
             document.getElementById("policy-stats").innerHTML = `
     <div class="stat-box"><div class="stat-label">Active Agencies</div><div class="stat-value">${AGENCIES.length}</div><div class="stat-sub">participating</div></div>
     <div class="stat-box"><div class="stat-label">Policy Updates</div><div class="stat-value">${policyNodeA._log.length+policyNodeB._log.length+policyNodeC._log.length}</div><div class="stat-sub">across all nodes</div></div>
-    <div class="stat-box"><div class="stat-label">Convergences</div><div class="stat-value" style="color:var(--green)" id="conv-count">0</div><div class="stat-sub">automatic merges</div></div>
+    <div class="stat-box"><div class="stat-label">Convergences</div><div class="stat-value" style="color:var(--green)" id="conv-count">${convergenceCount}</div><div class="stat-sub">automatic merges</div></div>
     <div class="stat-box"><div class="stat-label">Coordinator Needed</div><div class="stat-value" style="color:var(--green)">None</div><div class="stat-sub">self-converging</div></div>
     <div class="stat-box"><div class="stat-label">System State</div><div class="stat-value" style="font-size:13px;color:${converged?"var(--green)":"var(--amber)"}">${converged?"CONVERGED":"DIVERGED"}</div><div class="stat-sub">across 3 nodes</div></div>`;
         }
@@ -2719,7 +2720,8 @@
             document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
             document.getElementById("tab-" + id).classList.add("active");
             document.querySelectorAll(".nav-tab").forEach(t => {
-                if (t.textContent.toLowerCase().includes(id.slice(0, 4))) t.classList.add("active");
+                const onclick = t.getAttribute("onclick") || "";
+                if (onclick.includes("'" + id + "'")) t.classList.add("active");
             });
             if (id === "audit") refreshAuditLog();
             if (id === "permits") renderPermits();
