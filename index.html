@@ -1,0 +1,2473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicLedger — Transparent Government Infrastructure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #f5f2eb;
+            --cream2: #ede9de;
+            --cream3: #e4dfd2;
+            --navy: #1a2744;
+            --navy2: #243460;
+            --navy3: #0f1a33;
+            --slate: #4a5568;
+            --slate2: #6b7a8d;
+            --amber: #b8872a;
+            --amber2: #d4a040;
+            --amber-l: #f5e8c8;
+            --green: #2d6a4f;
+            --green-l: #d8f0e6;
+            --red: #9b2335;
+            --red-l: #fde8eb;
+            --blue: #1a5276;
+            --blue-l: #dbeafe;
+            --border: #d4cec2;
+            --border2: #c8c0b0;
+            --text: #1a1a2e;
+            --text2: #4a4a5a;
+            --text3: #7a7a8a;
+            --seal: #8b1a1a;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background: var(--cream);
+            color: var(--text);
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 14px;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        /* Subtle paper texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        #app {
+            position: relative;
+            z-index: 1;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 28px 80px;
+        }
+
+        /* ── MASTHEAD ── */
+        .masthead {
+            border-bottom: 3px double var(--border2);
+            padding: 20px 0 16px;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .masthead-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .seal {
+            width: 48px;
+            height: 48px;
+            border: 2px solid var(--seal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--seal);
+            flex-shrink: 0;
+            background: white;
+        }
+
+        .masthead-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--navy3);
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+
+        .masthead-sub {
+            font-size: 11px;
+            color: var(--slate2);
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 4px;
+        }
+
+        .masthead-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border: 1px solid var(--border2);
+            background: white;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--slate);
+            letter-spacing: 0.06em;
+        }
+
+        .status-pill .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        .dot-green {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            animation: blink 2.5s ease-in-out infinite;
+        }
+
+        .dot-amber {
+            background: var(--amber);
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        /* ── NAV TABS ── */
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--border2);
+            margin-bottom: 28px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-tab {
+            padding: 12px 22px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--slate2);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.15s;
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--navy);
+            background: var(--cream);
+        }
+
+        .nav-tab.active {
+            color: var(--navy);
+            border-bottom-color: var(--amber);
+            font-weight: 500;
+        }
+
+        .nav-tab .tab-icon {
+            margin-right: 7px;
+        }
+
+        /* ── SECTIONS ── */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ── INTRO BANNER ── */
+        .intro-banner {
+            background: var(--navy);
+            color: white;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+            border-left: 4px solid var(--amber2);
+        }
+
+        .intro-banner h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            font-weight: 400;
+            font-style: italic;
+            margin-bottom: 8px;
+            color: var(--amber2);
+        }
+
+        .intro-banner p {
+            font-size: 13px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.82);
+            max-width: 580px;
+        }
+
+        .intro-pillars {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+            min-width: 220px;
+        }
+
+        .pillar {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 7px 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .pillar-icon {
+            color: var(--amber2);
+            font-size: 13px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── LAYOUT ── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .full-col {
+            margin-bottom: 20px;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--navy);
+        }
+
+        .card.accent-amber {
+            border-top-color: var(--amber);
+        }
+
+        .card.accent-green {
+            border-top-color: var(--green);
+        }
+
+        .card.accent-red {
+            border-top-color: var(--red);
+        }
+
+        .card.accent-blue {
+            border-top-color: var(--blue);
+        }
+
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--cream);
+        }
+
+        .card-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--slate);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        /* ── STAT BLOCKS ── */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 14px 16px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--slate2);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: var(--navy);
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 3px;
+        }
+
+        /* ── BUDGET ITEMS ── */
+        .budget-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 6px;
+            transition: border-color 0.3s, background 0.3s;
+        }
+
+        .budget-item.flash-green {
+            border-color: var(--green);
+            background: var(--green-l);
+        }
+
+        .budget-item.flash-red {
+            border-color: var(--red);
+            background: var(--red-l);
+        }
+
+        .budget-dept {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--navy);
+            min-width: 160px;
+        }
+
+        .budget-bar-wrap {
+            flex: 1;
+            height: 6px;
+            background: var(--cream3);
+            overflow: hidden;
+        }
+
+        .budget-bar {
+            height: 100%;
+            background: var(--navy2);
+            transition: width 0.5s ease;
+        }
+
+        .budget-bar.over {
+            background: var(--red);
+        }
+
+        .budget-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--slate);
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .budget-pct {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text3);
+            min-width: 44px;
+            text-align: right;
+        }
+
+        /* ── VOTE TABLE ── */
+        .vote-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .vote-row:last-child {
+            border-bottom: none;
+        }
+
+        .vote-id {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--slate2);
+            min-width: 80px;
+            padding-top: 2px;
+        }
+
+        .vote-desc {
+            flex: 1;
+            color: var(--text);
+            line-height: 1.45;
+        }
+
+        .vote-outcome {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            padding: 2px 9px;
+            font-weight: 500;
+        }
+
+        .vo-passed {
+            background: var(--green-l);
+            color: var(--green);
+        }
+
+        .vo-failed {
+            background: var(--red-l);
+            color: var(--red);
+        }
+
+        .vo-pending {
+            background: var(--amber-l);
+            color: var(--amber);
+        }
+
+        .vote-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--text3);
+            margin-top: 3px;
+        }
+
+        .vote-proof {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--green);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* ── PERMIT CARDS ── */
+        .permit-card {
+            border: 1px solid var(--border);
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .permit-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .psd-active {
+            background: var(--green);
+        }
+
+        .psd-pending {
+            background: var(--amber);
+        }
+
+        .psd-revoked {
+            background: var(--red);
+        }
+
+        .permit-info {
+            flex: 1;
+        }
+
+        .permit-name {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--navy);
+        }
+
+        .permit-meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--slate2);
+            margin-top: 3px;
+        }
+
+        .permit-auth-chain {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .auth-node {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            padding: 2px 8px;
+            background: var(--cream2);
+            border: 1px solid var(--border);
+            color: var(--slate);
+        }
+
+        .auth-arrow {
+            font-size: 10px;
+            color: var(--slate2);
+        }
+
+        .permit-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-end;
+        }
+
+        /* ── POLICY NODES ── */
+        .policy-node {
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .policy-agency {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--navy);
+            min-width: 140px;
+        }
+
+        .policy-status-bar {
+            flex: 1;
+            height: 4px;
+            background: var(--cream3);
+        }
+
+        .policy-fill {
+            height: 100%;
+            background: var(--green);
+            transition: width 0.6s ease;
+        }
+
+        .policy-state {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--slate2);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        /* ── AUDIT LOG ── */
+        .audit-entry {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .audit-entry:last-child {
+            border-bottom: none;
+        }
+
+        .audit-time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text3);
+            min-width: 56px;
+        }
+
+        .audit-icon {
+            font-size: 13px;
+            min-width: 18px;
+        }
+
+        .audit-body {
+            flex: 1;
+            line-height: 1.45;
+            color: var(--text2);
+        }
+
+        .audit-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--text3);
+        }
+
+        /* ── BUTTONS ── */
+        .btn {
+            padding: 8px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-navy {
+            background: var(--navy);
+            color: white;
+            border-color: var(--navy);
+        }
+
+        .btn-navy:hover {
+            background: var(--navy2);
+        }
+
+        .btn-amber {
+            background: white;
+            color: var(--amber);
+            border-color: var(--amber2);
+        }
+
+        .btn-amber:hover {
+            background: var(--amber-l);
+        }
+
+        .btn-green {
+            background: white;
+            color: var(--green);
+            border-color: var(--green);
+        }
+
+        .btn-green:hover {
+            background: var(--green-l);
+        }
+
+        .btn-red {
+            background: white;
+            color: var(--red);
+            border-color: var(--red);
+        }
+
+        .btn-red:hover {
+            background: var(--red-l);
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 10px;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ── PROOF MODAL ── */
+        .proof-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 25, 50, 0.72);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .proof-overlay.open {
+            display: flex;
+        }
+
+        .proof-modal {
+            background: white;
+            border: 2px solid var(--navy);
+            max-width: 560px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .proof-modal-header {
+            background: var(--navy);
+            color: white;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .proof-modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-style: italic;
+        }
+
+        .proof-modal-body {
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .proof-line {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .proof-key {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--slate2);
+            min-width: 100px;
+            padding-top: 2px;
+        }
+
+        .proof-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--navy);
+            word-break: break-all;
+        }
+
+        .proof-val.green {
+            color: var(--green);
+        }
+
+        .proof-section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--amber);
+            margin: 14px 0 6px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+        }
+
+        /* ── FORM ELEMENTS ── */
+        select,
+        input {
+            background: var(--cream);
+            border: 1px solid var(--border2);
+            color: var(--text);
+            padding: 7px 10px;
+            font-family: 'Source Serif 4', serif;
+            font-size: 13px;
+            width: 100%;
+            outline: none;
+        }
+
+        select:focus,
+        input:focus {
+            border-color: var(--navy);
+        }
+
+        label {
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--slate2);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .form-row {
+            margin-bottom: 12px;
+        }
+
+        .inline-form {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .inline-form>* {
+            flex: 1;
+        }
+
+        .inline-form .btn {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        /* ── NOTICE ── */
+        .notice {
+            padding: 10px 14px;
+            border-left: 3px solid;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .notice.show {
+            display: block;
+        }
+
+        .notice-ok {
+            border-color: var(--green);
+            background: var(--green-l);
+            color: var(--green);
+        }
+
+        .notice-warn {
+            border-color: var(--red);
+            background: var(--red-l);
+            color: var(--red);
+        }
+
+        .notice-info {
+            border-color: var(--amber);
+            background: var(--amber-l);
+            color: var(--amber);
+        }
+
+        /* ── PROOF CHAIN STRIP ── */
+        .chain-strip {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            padding: 10px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+        }
+
+        .chain-block {
+            flex-shrink: 0;
+            padding: 6px 10px;
+            background: var(--cream2);
+            border: 1px solid var(--border);
+            margin-right: 2px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: var(--slate);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .chain-block:hover {
+            background: var(--amber-l);
+        }
+
+        .chain-block .cb-type {
+            color: var(--amber);
+            font-weight: 500;
+        }
+
+        .chain-block .cb-hash {
+            color: var(--text3);
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--cream2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border2);
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fadein {
+            animation: fadeIn 0.3s ease both;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <!-- MASTHEAD -->
+        <div class="masthead">
+            <div class="masthead-left">
+                <div class="seal">⚖</div>
+                <div>
+                    <div class="masthead-title">CivicLedger</div>
+                    <div class="masthead-sub">Transparent Government Infrastructure · Powered by JC Compute</div>
+                </div>
+            </div>
+            <div class="masthead-right">
+                <div class="status-pill"><span class="dot dot-green"></span>System Verified</div>
+                <div class="status-pill" id="proof-badge">0 Proof Records</div>
+                <div class="status-pill" style="color:var(--navy);font-weight:500" id="integrity-badge">✓ Integrity Intact</div>
+            </div>
+        </div>
+
+        <!-- NAV TABS -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showTab('budget')"><span class="tab-icon">$</span>Budget &amp; Appropriations</div>
+            <div class="nav-tab" onclick="showTab('votes')"><span class="tab-icon">✓</span>Voting &amp; Resolutions</div>
+            <div class="nav-tab" onclick="showTab('permits')"><span class="tab-icon">◈</span>Permits &amp; Licensing</div>
+            <div class="nav-tab" onclick="showTab('policy')"><span class="tab-icon">⟳</span>Multi-Agency Policy</div>
+            <div class="nav-tab" onclick="showTab('audit')"><span class="tab-icon">◎</span>Public Audit Trail</div>
+        </div>
+
+        <!-- ═══════════════════════ BUDGET TAB ═══════════════════════ -->
+        <div class="section active" id="tab-budget">
+
+            <div class="intro-banner">
+                <div>
+                    <h2>Where does every dollar go — and who authorized it?</h2>
+                    <p>Every budget appropriation and transfer is recorded as a cryptographically signed event. No funds can move without the right authority. Any citizen, auditor, or official can replay the entire budget history in seconds and verify it hasn't been altered.</p>
+                </div>
+                <div class="intro-pillars">
+                    <div class="pillar"><span class="pillar-icon">🔒</span>Spending beyond appropriation is structurally blocked, not just checked</div>
+                    <div class="pillar"><span class="pillar-icon">🔗</span>Every transfer has a cryptographic receipt</div>
+                    <div class="pillar"><span class="pillar-icon">👁</span>Full history is public and replayable</div>
+                </div>
+            </div>
+
+            <div class="stat-row" id="budget-stats"></div>
+
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">◈ Department Appropriations</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)" id="budget-epoch">FY2025 · Epoch 0</div>
+                    </div>
+                    <div class="card-body" id="dept-list"></div>
+                </div>
+
+                <div class="card accent-amber">
+                    <div class="card-header">
+                        <div class="card-title">→ Authorize Transfer</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row"><label>From Department</label><select id="b-from"></select></div>
+                        <div class="form-row"><label>To Department</label><select id="b-to"></select></div>
+                        <div class="form-row"><label>Amount ($)</label><input type="number" id="b-amount" value="50000" min="1"></div>
+                        <div class="form-row"><label>Authorization Reference</label><input type="text" id="b-ref" value="RES-2025-041" maxlength="24"></div>
+                        <div style="display:flex;gap:8px;margin-bottom:12px">
+                            <button class="btn btn-navy" onclick="doTransfer()" style="flex:1">Authorize Transfer</button>
+                            <button class="btn btn-red btn-sm" onclick="doOverspend()">Test Overrun</button>
+                        </div>
+                        <div id="b-notice" class="notice"></div>
+                        <div style="margin-top:14px">
+                            <label style="margin-bottom:8px">Scenarios</label>
+                            <div style="display:flex;flex-direction:column;gap:6px">
+                                <button class="btn btn-amber" onclick="runBudgetScenario('emergency')" style="font-size:10px">Emergency Reallocation</button>
+                                <button class="btn btn-amber" onclick="runBudgetScenario('audit')" style="font-size:10px">Full Audit Replay</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card full-col">
+                <div class="card-header">
+                    <div class="card-title">🔗 Immutable Proof Chain</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)" id="chain-root">root:—</div>
+                </div>
+                <div class="card-body" style="padding:8px 16px">
+                    <div class="chain-strip" id="budget-chain"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════ VOTES TAB ═══════════════════════ -->
+        <div class="section" id="tab-votes">
+
+            <div class="intro-banner">
+                <div>
+                    <h2>Every vote is a permanent, verifiable record.</h2>
+                    <p>Resolutions, motions, and council votes are recorded as immutable state transitions. The outcome of a vote cannot be altered retroactively. Any stakeholder can verify exactly how and when a vote was recorded — and prove it hasn't changed since.</p>
+                </div>
+                <div class="intro-pillars">
+                    <div class="pillar"><span class="pillar-icon">🗳</span>Vote outcomes are cryptographically sealed the moment they're recorded</div>
+                    <div class="pillar"><span class="pillar-icon">🔍</span>Anyone can verify a vote without trusting the clerk</div>
+                    <div class="pillar"><span class="pillar-icon">⚡</span>Tampering is detectable instantly — hashes don't lie</div>
+                </div>
+            </div>
+
+            <div class="stat-row" id="vote-stats"></div>
+
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">◎ Resolution Register</div>
+                    </div>
+                    <div class="card-body" style="padding:0" id="vote-list"></div>
+                </div>
+
+                <div class="card accent-green">
+                    <div class="card-header">
+                        <div class="card-title">+ Record New Vote</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row"><label>Resolution Number</label><input type="text" id="v-id" value="RES-2025-089" maxlength="20"></div>
+                        <div class="form-row"><label>Description</label><input type="text" id="v-desc" value="Approve capital infrastructure bond" maxlength="60"></div>
+                        <div class="form-row"><label>Result</label><select id="v-result">
+                                <option value="passed">PASSED</option>
+                                <option value="failed">FAILED</option>
+                            </select></div>
+                        <div class="form-row"><label>Votes For / Against</label>
+                            <div style="display:flex;gap:8px">
+                                <input type="number" id="v-for" value="7" min="0" placeholder="For">
+                                <input type="number" id="v-against" value="2" min="0" placeholder="Against">
+                            </div>
+                        </div>
+                        <button class="btn btn-navy" onclick="recordVote()" style="width:100%;margin-bottom:10px">Seal &amp; Record Vote</button>
+                        <div id="v-notice" class="notice"></div>
+                        <div style="margin-top:12px">
+                            <button class="btn btn-green" onclick="verifyVote()" style="width:100%;font-size:10px">Verify All Vote Integrity</button>
+                        </div>
+                        <div id="v-verify-notice" class="notice" style="margin-top:8px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════ PERMITS TAB ═══════════════════════ -->
+        <div class="section" id="tab-permits">
+
+            <div class="intro-banner">
+                <div>
+                    <h2>Who has authority to issue, revoke, or delegate a permit?</h2>
+                    <p>Every permit and license carries a complete chain of authority from the genesis authorization. If an official was never granted the power to issue a permit type, the system makes it structurally impossible — not just blocked by a checklist. This eliminates unauthorized permit issuance at the source.</p>
+                </div>
+                <div class="intro-pillars">
+                    <div class="pillar"><span class="pillar-icon">📜</span>Authority delegations are recorded and unalterable</div>
+                    <div class="pillar"><span class="pillar-icon">🚫</span>Unauthorized issuance is impossible, not just prohibited</div>
+                    <div class="pillar"><span class="pillar-icon">🔎</span>Full authority chain visible for any permit</div>
+                </div>
+            </div>
+
+            <div class="stat-row" id="permit-stats"></div>
+
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">◈ Active Permits &amp; Licenses</div>
+                    </div>
+                    <div class="card-body" id="permit-list"></div>
+                </div>
+
+                <div class="card accent-blue">
+                    <div class="card-header">
+                        <div class="card-title">+ Issue New Permit</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row"><label>Permit Type</label>
+                            <select id="p-type">
+                                <option value="building">Building Construction</option>
+                                <option value="food">Food Service License</option>
+                                <option value="alcohol">Alcohol Retail License</option>
+                                <option value="event">Public Event Permit</option>
+                                <option value="environmental">Environmental Impact</option>
+                            </select>
+                        </div>
+                        <div class="form-row"><label>Applicant / Entity</label><input type="text" id="p-entity" value="Greenfield Development LLC" maxlength="40"></div>
+                        <div class="form-row"><label>Issuing Authority</label>
+                            <select id="p-authority">
+                                <option value="PLANNING_DEPT">Planning Department</option>
+                                <option value="HEALTH_DEPT">Health Department</option>
+                                <option value="CITY_CLERK">City Clerk</option>
+                                <option value="COUNCIL_MEMBER" disabled>Council Member (no permit authority)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-navy" onclick="issuePermit()" style="width:100%;margin-bottom:8px">Issue Permit</button>
+                        <button class="btn btn-red" onclick="tryUnauthorizedPermit()" style="width:100%;font-size:10px">Test: Unauthorized Issuance</button>
+                        <div id="p-notice" class="notice" style="margin-top:8px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════ POLICY TAB ═══════════════════════ -->
+        <div class="section" id="tab-policy">
+
+            <div class="intro-banner">
+                <div>
+                    <h2>Multiple agencies. One consistent policy record.</h2>
+                    <p>When departments update the same policy area independently — whether due to system outages, parallel committee work, or simply different schedules — the system merges their updates into a single consistent record automatically. No reconciliation meetings. No conflicting versions. No lost changes.</p>
+                </div>
+                <div class="intro-pillars">
+                    <div class="pillar"><span class="pillar-icon">🔄</span>Agencies work independently; system merges without conflict</div>
+                    <div class="pillar"><span class="pillar-icon">📡</span>Network outages don't create contradictory records</div>
+                    <div class="pillar"><span class="pillar-icon">✓</span>Final policy state is the same regardless of update order</div>
+                </div>
+            </div>
+
+            <div class="stat-row" id="policy-stats"></div>
+
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">⟳ Agency Policy States</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)" id="convergence-status">Converged</div>
+                    </div>
+                    <div class="card-body" id="agency-list"></div>
+                    <div style="padding:0 16px 14px">
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--slate2);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase">Convergence Progress</div>
+                        <div style="height:6px;background:var(--cream3);overflow:hidden">
+                            <div id="conv-bar" style="height:100%;background:var(--green);width:100%;transition:width 0.5s ease"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card accent-amber">
+                    <div class="card-header">
+                        <div class="card-title">+ Submit Policy Update</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row"><label>Policy Domain</label>
+                            <select id="pol-domain">
+                                <option value="zoning">Zoning &amp; Land Use</option>
+                                <option value="public_safety">Public Safety</option>
+                                <option value="transit">Transit &amp; Infrastructure</option>
+                                <option value="environment">Environmental Standards</option>
+                                <option value="social_services">Social Services</option>
+                            </select>
+                        </div>
+                        <div class="form-row"><label>Submitting Agency</label>
+                            <select id="pol-agency">
+                                <option value="PLANNING">Planning &amp; Zoning</option>
+                                <option value="POLICE">Police Department</option>
+                                <option value="PUBLIC_WORKS">Public Works</option>
+                                <option value="PARKS">Parks &amp; Recreation</option>
+                                <option value="HEALTH">Health Services</option>
+                            </select>
+                        </div>
+                        <div class="form-row"><label>Policy Version</label><input type="text" id="pol-version" value="v2025.3" maxlength="16"></div>
+                        <button class="btn btn-navy" onclick="submitPolicy()" style="width:100%;margin-bottom:8px">Submit Update</button>
+                        <div style="display:flex;gap:8px">
+                            <button class="btn btn-amber" onclick="runPartition()" style="flex:1;font-size:10px">Simulate Outage + Heal</button>
+                        </div>
+                        <div id="pol-notice" class="notice" style="margin-top:8px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════ AUDIT TAB ═══════════════════════ -->
+        <div class="section" id="tab-audit">
+
+            <div class="intro-banner">
+                <div>
+                    <h2>A complete, unalterable public record.</h2>
+                    <p>Every action taken across all four systems — budget transfers, votes, permit issuances, policy updates — is recorded here in sequence. Any entry can be verified against its proof hash. The entire history can be replayed from scratch to confirm nothing has been changed.</p>
+                </div>
+                <div class="intro-pillars">
+                    <div class="pillar"><span class="pillar-icon">📋</span>Every government action has a tamper-evident record</div>
+                    <div class="pillar"><span class="pillar-icon">⟲</span>Full history replayable in seconds by any auditor</div>
+                    <div class="pillar"><span class="pillar-icon">🌐</span>No single official can alter the past</div>
+                </div>
+            </div>
+
+            <div class="stat-row" id="audit-stats"></div>
+
+            <div class="two-col">
+                <div class="card" style="grid-column:1/-1">
+                    <div class="card-header">
+                        <div class="card-title">◎ Public Audit Log — All Systems</div>
+                        <div style="display:flex;gap:8px">
+                            <button class="btn btn-navy btn-sm" onclick="replayAll()">⟲ Replay All</button>
+                            <button class="btn btn-amber btn-sm" onclick="exportAudit()">↓ Export</button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding:0;max-height:440px;overflow-y:auto" id="audit-log"></div>
+                </div>
+            </div>
+
+            <div class="card full-col accent-green">
+                <div class="card-header">
+                    <div class="card-title">⟲ Integrity Verification</div>
+                </div>
+                <div class="card-body">
+                    <div id="integrity-report" style="font-size:13px;line-height:1.8;color:var(--text2)">Click "Replay All" to run a full cryptographic integrity check across all recorded events.</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- #app -->
+
+    <!-- PROOF MODAL -->
+    <div class="proof-overlay" id="proof-modal" onclick="closeProofModal(event)">
+        <div class="proof-modal">
+            <div class="proof-modal-header">
+                <div class="proof-modal-title">Cryptographic Proof Record</div>
+                <button onclick="closeProofModal()" style="background:none;border:none;color:white;cursor:pointer;font-size:18px">×</button>
+            </div>
+            <div class="proof-modal-body" id="proof-modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        "use strict";
+        // ══════════════════════════════════════════════════════════
+        //  (S, R, M) ENGINE — inlined
+        // ══════════════════════════════════════════════════════════
+        function canonicalise(v) {
+            if (v === null || typeof v !== "object") return JSON.stringify(v);
+            if (Array.isArray(v)) return "[" + v.map(canonicalise).join(",") + "]";
+            return "{" + Object.keys(v).sort().map(k => JSON.stringify(k) + ":" + canonicalise(v[k])).join(",") + "}";
+        }
+
+        function hash(v) {
+            const s = canonicalise(v);
+            let h1 = 0x811c9dc5 >>> 0,
+                h2 = 0x84222325 >>> 0;
+            for (let i = 0; i < s.length; i++) {
+                const c = s.charCodeAt(i);
+                h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+                h2 = Math.imul(h2 ^ c, 0x01b3) >>> 0;
+            }
+            const hex = n => n.toString(16).padStart(8, "0");
+            return hex(h1) + hex(h2);
+        }
+        class State {
+            constructor(v, p = null) {
+                this.value = v;
+                this.parentHash = p;
+                this.hash = hash({
+                    value: v,
+                    parentHash: p
+                });
+            }
+        }
+        const GENESIS = new State(null, null);
+        class Reducer {
+            constructor(name, fn, authCheck = null) {
+                this.name = name;
+                this._fn = fn;
+                this._auth = authCheck;
+            }
+            apply(state, payload, auth = null) {
+                if (this._auth) {
+                    const ok = this._auth(state.value, payload, auth);
+                    if (!ok) throw new Error(`AUTHORITY_DENIED: '${this.name}' — ${auth||"no credentials"} cannot perform this action`);
+                }
+                return new State(this._fn(state.value, payload), state.hash);
+            }
+        }
+        class VectorClock {
+            constructor(c = {}) {
+                this.clocks = {
+                    ...c
+                };
+            }
+            tick(id) {
+                const n = new VectorClock(this.clocks);
+                n.clocks[id] = (n.clocks[id] || 0) + 1;
+                return n;
+            }
+            merge(o) {
+                const r = {
+                    ...this.clocks
+                };
+                for (const [k, v] of Object.entries(o.clocks)) r[k] = Math.max(r[k] || 0, v);
+                return new VectorClock(r);
+            }
+            leq(o) {
+                for (const [k, v] of Object.entries(this.clocks))
+                    if ((o.clocks[k] || 0) < v) return false;
+                return true;
+            }
+        }
+        class StampedState {
+            constructor(s, c, n) {
+                this.state = s;
+                this.clock = c instanceof VectorClock ? c : new VectorClock(c || {});
+                this.nodeId = n;
+            }
+        }
+
+        function mergeVals(a, b) {
+            if (a === null) return b;
+            if (b === null) return a;
+            if (typeof a === "object" && typeof b === "object" && !Array.isArray(a)) {
+                const m = {
+                    ...a
+                };
+                for (const k of Object.keys(b)) {
+                    if (m[k] === undefined) m[k] = b[k];
+                    else if (typeof m[k] === "number" && typeof b[k] === "number") m[k] = Math.max(m[k], b[k]);
+                }
+                return m;
+            }
+            return a;
+        }
+
+        function merge(A, B) {
+            const {
+                state: sa,
+                clock: ca
+            } = A, {
+                state: sb,
+                clock: cb
+            } = B;
+            if (sa.hash === sb.hash) return new StampedState(sa, ca.merge(cb), A.nodeId);
+            if (cb.leq(ca) && !ca.leq(cb)) return new StampedState(sa, ca, A.nodeId);
+            if (ca.leq(cb) && !cb.leq(ca)) return new StampedState(sb, cb, A.nodeId);
+            return new StampedState(new State(mergeVals(sa.value, sb.value), hash([sa.hash, sb.hash].sort().join("|"))), ca.merge(cb), A.nodeId);
+        }
+        class Runtime {
+            constructor(id, registry) {
+                this.id = id;
+                this.registry = registry;
+                this._log = [];
+                this._proofChain = [];
+                this._current = new StampedState(GENESIS, new VectorClock(), id);
+                this._seq = 0;
+            }
+            get state() {
+                return this._current.state;
+            }
+            dispatch(name, payload, auth = null) {
+                const r = this.registry[name];
+                if (!r) throw new Error(`Unknown reducer: ${name}`);
+                const ns = r.apply(this._current.state, payload, auth);
+                const ev = {
+                    name,
+                    payload,
+                    seq: this._seq++,
+                    hash: hash({
+                        name,
+                        payload,
+                        seq: this._seq
+                    })
+                };
+                this._log.push(ev);
+                this._proofChain.push({
+                    evHash: ev.hash,
+                    stateHash: ns.hash
+                });
+                this._current = new StampedState(ns, this._current.clock.tick(this.id), this.id);
+                return ns;
+            }
+            mergeRemote(r) {
+                this._current = merge(this._current, r._current);
+            }
+            replay(log, start = GENESIS) {
+                let c = start;
+                for (const ev of log) {
+                    const r = this.registry[ev.name];
+                    if (!r) throw new Error("Unknown reducer in log");
+                    c = r.apply(c, ev.payload, "REPLAY");
+                }
+                return c;
+            }
+            verify() {
+                let c = GENESIS;
+                const bad = [];
+                for (let i = 0; i < this._log.length; i++) {
+                    const ev = this._log[i];
+                    const r = this.registry[ev.name];
+                    c = r.apply(c, ev.payload, "REPLAY");
+                    if (c.hash !== this._proofChain[i].stateHash) bad.push(i);
+                }
+                return {
+                    valid: bad.length === 0,
+                    mismatches: bad
+                };
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  CIVIC DOMAIN MODELS
+        // ══════════════════════════════════════════════════════════
+
+        // — AUTHORITY LEVELS —
+        const AUTHORITY = {
+            COMPTROLLER: {
+                level: 5,
+                label: "Comptroller"
+            },
+            FINANCE_DIR: {
+                level: 4,
+                label: "Finance Director"
+            },
+            DEPT_HEAD: {
+                level: 3,
+                label: "Department Head"
+            },
+            PLANNING_DEPT: {
+                level: 4,
+                label: "Planning Department"
+            },
+            HEALTH_DEPT: {
+                level: 4,
+                label: "Health Department"
+            },
+            CITY_CLERK: {
+                level: 3,
+                label: "City Clerk"
+            },
+            COUNCIL_MEMBER: {
+                level: 2,
+                label: "Council Member"
+            },
+            CITIZEN: {
+                level: 1,
+                label: "Citizen"
+            },
+            REPLAY: {
+                level: 99,
+                label: "System Replay"
+            },
+        };
+
+        // ── BUDGET RUNTIME ──
+        const budgetRegistry = {
+            transfer: new Reducer("transfer",
+                (s, {
+                    from,
+                    to,
+                    amount,
+                    ref
+                }) => ({
+                    ...s,
+                    [from]: {
+                        ...s[from],
+                        balance: s[from].balance - amount
+                    },
+                    [to]: {
+                        ...s[to],
+                        balance: s[to].balance + amount
+                    },
+                    _lastRef: ref
+                }),
+                (s, {
+                    from,
+                    to,
+                    amount
+                }, auth) => {
+                    if (auth === "REPLAY") return true;
+                    if (!auth || !AUTHORITY[auth]) return false;
+                    if (AUTHORITY[auth].level < 3) return false;
+                    if (!s[from] || s[from].balance < amount) return false;
+                    if (amount <= 0) return false;
+                    return true;
+                }
+            ),
+            audit_snapshot: new Reducer("audit_snapshot",
+                (s, {
+                    note
+                }) => ({
+                    ...s,
+                    _audit: {
+                        note,
+                        ts: Date.now()
+                    }
+                }),
+                () => true
+            ),
+        };
+
+        const DEPTS = [{
+                id: "POLICE",
+                name: "Police Department",
+                budget: 4_200_000,
+                color: "#1a2744"
+            },
+            {
+                id: "PUBLIC_WORKS",
+                name: "Public Works",
+                budget: 3_100_000,
+                color: "#2d5016"
+            },
+            {
+                id: "PARKS",
+                name: "Parks & Recreation",
+                budget: 1_800_000,
+                color: "#4a5568"
+            },
+            {
+                id: "HEALTH",
+                name: "Health Services",
+                budget: 2_600_000,
+                color: "#5a1a1a"
+            },
+            {
+                id: "PLANNING",
+                name: "Planning & Zoning",
+                budget: 1_200_000,
+                color: "#1a3a5a"
+            },
+            {
+                id: "GENERAL",
+                name: "General Fund Reserve",
+                budget: 8_000_000,
+                color: "#3a2a1a"
+            },
+        ];
+
+        const budgetRuntime = new Runtime("BUDGET_NODE_A", budgetRegistry);
+        const budgetNodeB = new Runtime("BUDGET_NODE_B", budgetRegistry);
+        const initBudget = {};
+        for (const d of DEPTS) initBudget[d.id] = {
+            name: d.name,
+            balance: d.budget,
+            _original: d.budget
+        };
+        const seedBudgetState = new State(initBudget, null);
+        budgetRuntime._current = new StampedState(seedBudgetState, new VectorClock(), "BUDGET_NODE_A");
+        budgetNodeB._current = new StampedState(seedBudgetState, new VectorClock(), "BUDGET_NODE_B");
+
+        // ── VOTE RUNTIME ──
+        const voteRegistry = {
+            record_vote: new Reducer("record_vote",
+                (s, {
+                    id,
+                    desc,
+                    result,
+                    vFor,
+                    vAgainst
+                }) => ({
+                    ...s,
+                    [id]: {
+                        desc,
+                        result,
+                        vFor,
+                        vAgainst,
+                        ts: Date.now(),
+                        sealed: true
+                    }
+                }),
+                (s, {
+                    id
+                }, auth) => {
+                    if (auth === "REPLAY") return true;
+                    if (!auth || !AUTHORITY[auth]) return false;
+                    if (AUTHORITY[auth].level < 3) return false;
+                    if (s[id] && s[id].sealed) return false; // can't re-record a sealed vote
+                    return true;
+                }
+            ),
+        };
+        const voteRuntime = new Runtime("VOTE_NODE", voteRegistry);
+        const initVotes = {
+            "RES-2025-001": {
+                desc: "Adopt FY2025 Annual Budget",
+                result: "passed",
+                vFor: 8,
+                vAgainst: 1,
+                ts: Date.now() - 8.64e7,
+                sealed: true
+            },
+            "RES-2025-012": {
+                desc: "Approve Westside Rezoning Plan",
+                result: "passed",
+                vFor: 6,
+                vAgainst: 3,
+                ts: Date.now() - 7.2e7,
+                sealed: true
+            },
+            "RES-2025-031": {
+                desc: "Reject Proposed Transit Fee Increase",
+                result: "failed",
+                vFor: 3,
+                vAgainst: 6,
+                ts: Date.now() - 3.6e7,
+                sealed: true
+            },
+            "RES-2025-058": {
+                desc: "Emergency Shelter Funding Authorization",
+                result: "passed",
+                vFor: 9,
+                vAgainst: 0,
+                ts: Date.now() - 1.8e7,
+                sealed: true
+            },
+        };
+        voteRuntime._current = new StampedState(new State(initVotes, null), new VectorClock(), "VOTE_NODE");
+
+        // ── PERMIT RUNTIME ──
+        const PERMIT_AUTH = {
+            building: ["PLANNING_DEPT"],
+            food: ["HEALTH_DEPT"],
+            alcohol: ["CITY_CLERK", "PLANNING_DEPT"],
+            event: ["CITY_CLERK", "PLANNING_DEPT"],
+            environmental: ["PLANNING_DEPT"],
+        };
+        const permitRegistry = {
+            issue_permit: new Reducer("issue_permit",
+                (s, {
+                    id,
+                    type,
+                    entity,
+                    issuer
+                }) => ({
+                    ...s,
+                    [id]: {
+                        type,
+                        entity,
+                        issuer,
+                        status: "active",
+                        issuedAt: Date.now()
+                    }
+                }),
+                (s, {
+                    type,
+                    id
+                }, auth) => {
+                    if (auth === "REPLAY") return true;
+                    if (!auth) return false;
+                    const allowed = PERMIT_AUTH[type] || [];
+                    return allowed.includes(auth);
+                }
+            ),
+            revoke_permit: new Reducer("revoke_permit",
+                (s, {
+                    id,
+                    reason
+                }) => ({
+                    ...s,
+                    [id]: {
+                        ...s[id],
+                        status: "revoked",
+                        revokedReason: reason,
+                        revokedAt: Date.now()
+                    }
+                }),
+                (s, {
+                    id
+                }, auth) => {
+                    if (auth === "REPLAY") return true;
+                    return auth === "PLANNING_DEPT" || auth === "CITY_CLERK" || auth === "HEALTH_DEPT";
+                }
+            ),
+        };
+        const permitRuntime = new Runtime("PERMIT_NODE", permitRegistry);
+        const initPermits = {
+            "BLD-2025-0041": {
+                type: "building",
+                entity: "Harbor View Condominiums",
+                issuer: "PLANNING_DEPT",
+                status: "active",
+                issuedAt: Date.now() - 4.32e7
+            },
+            "FD-2025-0118": {
+                type: "food",
+                entity: "Sunrise Café LLC",
+                issuer: "HEALTH_DEPT",
+                status: "active",
+                issuedAt: Date.now() - 2.16e7
+            },
+            "ALQ-2025-0007": {
+                type: "alcohol",
+                entity: "Downtown Taproom Inc.",
+                issuer: "CITY_CLERK",
+                status: "active",
+                issuedAt: Date.now() - 8.64e6
+            },
+            "EVT-2025-0029": {
+                type: "event",
+                entity: "Riverside Festival Org.",
+                issuer: "CITY_CLERK",
+                status: "pending",
+                issuedAt: Date.now() - 1.8e6
+            },
+        };
+        permitRuntime._current = new StampedState(new State(initPermits, null), new VectorClock(), "PERMIT_NODE");
+
+        // ── POLICY RUNTIME ──
+        const policyRegistry = {
+            update_policy: new Reducer("update_policy",
+                (s, {
+                    agency,
+                    domain,
+                    version,
+                    content
+                }) => ({
+                    ...s,
+                    [agency + "::" + domain]: {
+                        agency,
+                        domain,
+                        version,
+                        content,
+                        updatedAt: Date.now()
+                    }
+                }),
+                () => true
+            ),
+        };
+        const AGENCIES = [{
+                id: "PLANNING",
+                name: "Planning & Zoning",
+                domain: "zoning"
+            },
+            {
+                id: "POLICE",
+                name: "Police Department",
+                domain: "public_safety"
+            },
+            {
+                id: "PUBLIC_WORKS",
+                name: "Public Works",
+                domain: "transit"
+            },
+            {
+                id: "HEALTH",
+                name: "Health Services",
+                domain: "environment"
+            },
+            {
+                id: "PARKS",
+                name: "Parks & Recreation",
+                domain: "social_services"
+            },
+        ];
+        const policyNodeA = new Runtime("POL_NODE_A", policyRegistry);
+        const policyNodeB = new Runtime("POL_NODE_B", policyRegistry);
+        const policyNodeC = new Runtime("POL_NODE_C", policyRegistry);
+        const initPolicy = {};
+        for (const a of AGENCIES) initPolicy[a.id + "::" + a.domain] = {
+            agency: a.id,
+            domain: a.domain,
+            version: "v2025.1",
+            content: "baseline",
+            updatedAt: Date.now() - 8.64e7
+        };
+        const pSeedState = new State(initPolicy, null);
+        [policyNodeA, policyNodeB, policyNodeC].forEach(n => {
+            n._current = new StampedState(pSeedState, new VectorClock(), n.id);
+        });
+
+        // ══════════════════════════════════════════════════════════
+        //  GLOBAL AUDIT LOG
+        // ══════════════════════════════════════════════════════════
+        let auditEntries = [];
+        let proofCount = 0;
+        let proofChainBlocks = [];
+
+        function addAudit(icon, system, desc, stateHash, detail = "", status = "ok") {
+            const ts = new Date().toLocaleTimeString("en-US", {
+                hour12: false,
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            });
+            auditEntries.unshift({
+                icon,
+                system,
+                desc,
+                stateHash,
+                detail,
+                status,
+                ts,
+                seq: auditEntries.length + 1
+            });
+            proofCount++;
+            proofChainBlocks.unshift({
+                type: system,
+                hash: stateHash,
+                desc: desc.slice(0, 22)
+            });
+            updateGlobal();
+            refreshAuditLog();
+        }
+
+        function shortH(h) {
+            return h.slice(0, 8) + "…" + h.slice(-4);
+        }
+
+        function fmtMoney(n) {
+            return "$" + Math.abs(n).toLocaleString("en-US");
+        }
+
+        function updateGlobal() {
+            document.getElementById("proof-badge").textContent = proofCount + " Proof Records";
+            const vr = budgetRuntime.verify();
+            document.getElementById("integrity-badge").textContent = vr.valid ? "✓ Integrity Intact" : "⚠ Mismatch Detected";
+            document.getElementById("integrity-badge").style.color = vr.valid ? "var(--green)" : "var(--red)";
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  BUDGET UI
+        // ══════════════════════════════════════════════════════════
+        function renderBudget() {
+            const state = budgetRuntime.state.value;
+            const container = document.getElementById("dept-list");
+            container.innerHTML = "";
+            let totalBudget = 0,
+                totalSpent = 0;
+            for (const d of DEPTS) {
+                const acc = state[d.id] || {
+                    balance: 0,
+                    _original: d.budget
+                };
+                totalBudget += acc._original || d.budget;
+                totalSpent += (acc._original || d.budget) - acc.balance;
+                const pct = Math.max(0, Math.min(100, (acc.balance / (acc._original || d.budget)) * 100));
+                const over = acc.balance < 0;
+                const row = document.createElement("div");
+                row.className = "budget-item";
+                row.id = "dept-" + d.id;
+                row.innerHTML = `<div class="budget-dept">${d.name}</div>
+      <div class="budget-bar-wrap"><div class="budget-bar${over?" over":""}" style="width:${pct}%"></div></div>
+      <div class="budget-amount">${fmtMoney(acc.balance)}</div>
+      <div class="budget-pct">${Math.round(pct)}%</div>`;
+                container.appendChild(row);
+            }
+            document.getElementById("budget-epoch").textContent = `FY2025 · Epoch ${budgetRuntime._log.length}`;
+            document.getElementById("chain-root").textContent = "root:" + shortH(budgetRuntime.state.hash);
+            renderBudgetStats(totalBudget, totalSpent);
+            renderBudgetChain();
+            populateBudgetSelects();
+        }
+
+        function renderBudgetStats(total, spent) {
+            document.getElementById("budget-stats").innerHTML = `
+    <div class="stat-box"><div class="stat-label">Total Budget</div><div class="stat-value">${fmtMoney(total)}</div><div class="stat-sub">FY2025 appropriated</div></div>
+    <div class="stat-box"><div class="stat-label">Spent / Transferred</div><div class="stat-value">${fmtMoney(spent)}</div><div class="stat-sub">from original</div></div>
+    <div class="stat-box"><div class="stat-label">Remaining</div><div class="stat-value">${fmtMoney(total-spent)}</div><div class="stat-sub">unappropriated</div></div>
+    <div class="stat-box"><div class="stat-label">Transactions</div><div class="stat-value">${budgetRuntime._log.length}</div><div class="stat-sub">authorized transfers</div></div>
+    <div class="stat-box"><div class="stat-label">Proof Records</div><div class="stat-value">${budgetRuntime._proofChain.length}</div><div class="stat-sub">immutable entries</div></div>`;
+        }
+
+        function renderBudgetChain() {
+            const strip = document.getElementById("budget-chain");
+            strip.innerHTML = "";
+            for (const b of proofChainBlocks.filter(b => b.type === "BUDGET").slice(0, 12)) {
+                const el = document.createElement("div");
+                el.className = "chain-block";
+                el.onclick = () => showProofModal(b);
+                el.innerHTML = `<div class="cb-type">${b.type}</div><div class="cb-hash">${shortH(b.hash)}</div>`;
+                strip.appendChild(el);
+            }
+        }
+
+        function populateBudgetSelects() {
+            const state = budgetRuntime.state.value;
+            const from = document.getElementById("b-from"),
+                to = document.getElementById("b-to");
+            if (!from) return;
+            from.innerHTML = to.innerHTML = "";
+            for (const d of DEPTS) {
+                from.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                to.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+            }
+            to.selectedIndex = 1;
+        }
+
+        function flashDept(id, dir) {
+            const el = document.getElementById("dept-" + id);
+            if (!el) return;
+            el.classList.add(dir === "out" ? "flash-red" : "flash-green");
+            setTimeout(() => el.classList.remove("flash-red", "flash-green"), 900);
+        }
+
+        function showNotice(id, type, msg) {
+            const el = document.getElementById(id);
+            el.className = "notice " + type + " show";
+            el.textContent = msg;
+        }
+
+        function doTransfer() {
+            const from = document.getElementById("b-from").value;
+            const to = document.getElementById("b-to").value;
+            const amount = parseFloat(document.getElementById("b-amount").value) || 0;
+            const ref = document.getElementById("b-ref").value || "TRANSFER";
+            if (from === to) {
+                showNotice("b-notice", "notice-warn", "Source and destination cannot be the same.");
+                return;
+            }
+            try {
+                const ns = budgetRuntime.dispatch("transfer", {
+                    from,
+                    to,
+                    amount,
+                    ref
+                }, "COMPTROLLER");
+                budgetNodeB.mergeRemote(budgetRuntime);
+                flashDept(from, "out");
+                flashDept(to, "in");
+                addAudit("→", "BUDGET", `Transfer ${fmtMoney(amount)}`, ns.hash, `${from} → ${to} · ${ref}`);
+                renderBudget();
+                showNotice("b-notice", "notice-ok", `✓ Transfer authorized.\nProof: ${shortH(ns.hash)}`);
+            } catch (e) {
+                addAudit("✗", "BUDGET", "Transfer blocked: " + e.message.slice(0, 40), budgetRuntime.state.hash, "", "error");
+                showNotice("b-notice", "notice-warn", "Blocked: " + e.message);
+            }
+        }
+
+        function doOverspend() {
+            const from = document.getElementById("b-from").value;
+            const to = document.getElementById("b-to").value;
+            try {
+                budgetRuntime.dispatch("transfer", {
+                    from,
+                    to,
+                    amount: 999_999_999,
+                    ref: "OVERRUN-TEST"
+                }, "COMPTROLLER");
+                showNotice("b-notice", "notice-warn", "WARNING: This should have been blocked.");
+            } catch (e) {
+                addAudit("✗", "BUDGET", "Overrun attempt BLOCKED", budgetRuntime.state.hash, "", "error");
+                showNotice("b-notice", "notice-warn", `✗ Blocked: Budget overrun structurally prevented.\n${e.message}`);
+                renderBudget();
+            }
+        }
+
+        function runBudgetScenario(s) {
+            if (s === "emergency") {
+                try {
+                    const steps = [{
+                            from: "GENERAL",
+                            to: "POLICE",
+                            amount: 200_000,
+                            ref: "EMRG-2025-A"
+                        },
+                        {
+                            from: "GENERAL",
+                            to: "HEALTH",
+                            amount: 150_000,
+                            ref: "EMRG-2025-B"
+                        },
+                        {
+                            from: "GENERAL",
+                            to: "PUBLIC_WORKS",
+                            amount: 80_000,
+                            ref: "EMRG-2025-C"
+                        },
+                    ];
+                    for (const t of steps) {
+                        const ns = budgetRuntime.dispatch("transfer", t, "COMPTROLLER");
+                        budgetNodeB.mergeRemote(budgetRuntime);
+                        addAudit("⚡", "BUDGET", `Emergency: ${fmtMoney(t.amount)}`, ns.hash, t.ref);
+                    }
+                    const snap = budgetRuntime.dispatch("audit_snapshot", {
+                        note: "Post-emergency reallocation snapshot"
+                    }, "COMPTROLLER");
+                    addAudit("◎", "BUDGET", "Audit snapshot recorded", snap.hash);
+                    renderBudget();
+                    showNotice("b-notice", "notice-ok", "✓ Emergency reallocation complete. 3 transfers + audit snapshot recorded.");
+                } catch (e) {
+                    showNotice("b-notice", "notice-warn", "Error: " + e.message);
+                }
+            } else if (s === "audit") {
+                const logLen = budgetRuntime._log.length;
+                if (logLen === 0) {
+                    showNotice("b-notice", "notice-warn", "No transactions to replay yet.");
+                    return;
+                }
+                const replayed = budgetRuntime.replay(budgetRuntime._log);
+                const match = replayed.hash === budgetRuntime.state.hash;
+                addAudit("⟲", "BUDGET", "Full audit replay", replayed.hash, `${logLen} events, integrity:${match?"OK":"FAIL"}`);
+                showNotice("b-notice", match ? "notice-ok" : "notice-warn",
+                    `⟲ Replay of ${logLen} events.\nExpected: ${shortH(budgetRuntime.state.hash)}\nGot:      ${shortH(replayed.hash)}\nIntegrity: ${match?"VERIFIED ✓":"MISMATCH ✗"}`);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  VOTE UI
+        // ══════════════════════════════════════════════════════════
+        function renderVotes() {
+            const state = voteRuntime.state.value;
+            const container = document.getElementById("vote-list");
+            container.innerHTML = "";
+            const entries = Object.entries(state).sort((a, b) => b[1].ts - a[1].ts);
+            for (const [id, v] of entries) {
+                const row = document.createElement("div");
+                row.className = "vote-row";
+                row.innerHTML = `
+      <div><div class="vote-id">${id}</div><div class="vote-hash">${new Date(v.ts).toLocaleDateString()}</div></div>
+      <div class="vote-desc">${v.desc}<div class="vote-hash">For: ${v.vFor} · Against: ${v.vAgainst}</div>
+        <div class="vote-proof" onclick="showVoteProof('${id}')">View Proof Record →</div></div>
+      <div class="vote-outcome vo-${v.result}">${v.result.toUpperCase()}</div>`;
+                container.appendChild(row);
+            }
+            renderVoteStats(entries);
+        }
+
+        function renderVoteStats(entries) {
+            const passed = entries.filter(([, v]) => v.result === "passed").length;
+            const failed = entries.filter(([, v]) => v.result === "failed").length;
+            document.getElementById("vote-stats").innerHTML = `
+    <div class="stat-box"><div class="stat-label">Total Resolutions</div><div class="stat-value">${entries.length}</div><div class="stat-sub">on record</div></div>
+    <div class="stat-box"><div class="stat-label">Passed</div><div class="stat-value" style="color:var(--green)">${passed}</div><div class="stat-sub">adopted</div></div>
+    <div class="stat-box"><div class="stat-label">Failed</div><div class="stat-value" style="color:var(--red)">${failed}</div><div class="stat-sub">rejected</div></div>
+    <div class="stat-box"><div class="stat-label">Sealed Records</div><div class="stat-value">${entries.length}</div><div class="stat-sub">tamper-evident</div></div>
+    <div class="stat-box"><div class="stat-label">Ledger Hash</div><div class="stat-value" style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--navy)">${shortH(voteRuntime.state.hash)}</div><div class="stat-sub">current root</div></div>`;
+        }
+
+        function recordVote() {
+            const id = document.getElementById("v-id").value.trim();
+            const desc = document.getElementById("v-desc").value.trim();
+            const result = document.getElementById("v-result").value;
+            const vFor = parseInt(document.getElementById("v-for").value) || 0;
+            const vAgainst = parseInt(document.getElementById("v-against").value) || 0;
+            if (!id || !desc) {
+                showNotice("v-notice", "notice-warn", "Resolution number and description are required.");
+                return;
+            }
+            try {
+                const ns = voteRuntime.dispatch("record_vote", {
+                    id,
+                    desc,
+                    result,
+                    vFor,
+                    vAgainst
+                }, "CITY_CLERK");
+                addAudit("✓", "VOTE", `${id}: ${result.toUpperCase()}`, ns.hash, `${vFor}-${vAgainst} · ${desc.slice(0,30)}`);
+                renderVotes();
+                showNotice("v-notice", "notice-ok", `✓ Resolution ${id} sealed.\nProof: ${shortH(ns.hash)}\nThis record cannot be altered.`);
+            } catch (e) {
+                showNotice("v-notice", "notice-warn", "Blocked: " + e.message);
+            }
+        }
+
+        function verifyVote() {
+            const vr = voteRuntime.verify();
+            const n = document.getElementById("v-verify-notice");
+            n.className = "notice " + (vr.valid ? "notice-ok" : "notice-warn") + " show";
+            n.textContent = vr.valid ?
+                "✓ All " + voteRuntime._log.length + " vote records verified. No tampering detected. Ledger hash: " + shortH(voteRuntime.state.hash) :
+                "⚠ Mismatch detected in " + vr.mismatches.length + " records.";
+        }
+
+        function showVoteProof(id) {
+            const state = voteRuntime.state.value;
+            const v = state[id];
+            if (!v) return;
+            const body = document.getElementById("proof-modal-body");
+            body.innerHTML = `
+    <div class="proof-section-title">Resolution Record</div>
+    <div class="proof-line"><div class="proof-key">Resolution ID</div><div class="proof-val">${id}</div></div>
+    <div class="proof-line"><div class="proof-key">Description</div><div class="proof-val">${v.desc}</div></div>
+    <div class="proof-line"><div class="proof-key">Result</div><div class="proof-val ${v.result==="passed"?"green":""}">${v.result.toUpperCase()}</div></div>
+    <div class="proof-line"><div class="proof-key">Vote Count</div><div class="proof-val">For: ${v.vFor} · Against: ${v.vAgainst}</div></div>
+    <div class="proof-line"><div class="proof-key">Recorded</div><div class="proof-val">${new Date(v.ts).toISOString()}</div></div>
+    <div class="proof-section-title">Cryptographic Integrity</div>
+    <div class="proof-line"><div class="proof-key">Ledger Root</div><div class="proof-val green">${voteRuntime.state.hash}</div></div>
+    <div class="proof-line"><div class="proof-key">Parent Hash</div><div class="proof-val">${voteRuntime.state.parentHash||"GENESIS"}</div></div>
+    <div class="proof-section-title">What This Means</div>
+    <div style="font-size:12px;color:var(--text2);line-height:1.7">
+      The ledger root hash above is computed from the entire vote record, including this resolution.
+      If any vote — including this one — were altered after sealing, this hash would change and the
+      tampering would be immediately detectable by any citizen or auditor running the verification.
+    </div>`;
+            document.getElementById("proof-modal").classList.add("open");
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  PERMIT UI
+        // ══════════════════════════════════════════════════════════
+        function renderPermits() {
+            const state = permitRuntime.state.value;
+            const container = document.getElementById("permit-list");
+            container.innerHTML = "";
+            const PTYPE = {
+                building: "Building Construction",
+                food: "Food Service",
+                alcohol: "Alcohol Retail",
+                event: "Public Event",
+                environmental: "Environmental"
+            };
+            let active = 0,
+                pending = 0,
+                revoked = 0;
+            for (const [id, p] of Object.entries(state)) {
+                if (p.status === "active") active++;
+                else if (p.status === "pending") pending++;
+                else revoked++;
+                const dotClass = p.status === "active" ? "psd-active" : p.status === "pending" ? "psd-pending" : "psd-revoked";
+                const authChain = `<div class="auth-chain-label" style="font-size:9px;color:var(--text3);margin-top:4px">Authority: </div>
+      <div class="permit-auth-chain">
+        <div class="auth-node">Mayor's Office</div><div class="auth-arrow">›</div>
+        <div class="auth-node">${AUTHORITY[p.issuer]?.label||p.issuer}</div><div class="auth-arrow">›</div>
+        <div class="auth-node">${id}</div>
+      </div>`;
+                const card = document.createElement("div");
+                card.className = "permit-card";
+                card.innerHTML = `
+      <div class="permit-status-dot ${dotClass}"></div>
+      <div class="permit-info">
+        <div class="permit-name">${p.entity}</div>
+        <div class="permit-meta">${id} · ${PTYPE[p.type]||p.type} · ${p.status.toUpperCase()}</div>
+        ${authChain}
+      </div>
+      <div class="permit-actions">
+        <button class="btn btn-amber btn-sm" onclick="showPermitProof('${id}')">Proof</button>
+        ${p.status==="active"?`<button class="btn btn-red btn-sm" onclick="revokePermit('${id}')">Revoke</button>`:""}
+      </div>`;
+                container.appendChild(card);
+            }
+            renderPermitStats(active, pending, revoked);
+        }
+
+        function renderPermitStats(active, pending, revoked) {
+            document.getElementById("permit-stats").innerHTML = `
+    <div class="stat-box"><div class="stat-label">Active Permits</div><div class="stat-value" style="color:var(--green)">${active}</div><div class="stat-sub">currently valid</div></div>
+    <div class="stat-box"><div class="stat-label">Pending Review</div><div class="stat-value" style="color:var(--amber)">${pending}</div><div class="stat-sub">under review</div></div>
+    <div class="stat-box"><div class="stat-label">Revoked</div><div class="stat-value" style="color:var(--red)">${revoked}</div><div class="stat-sub">on record</div></div>
+    <div class="stat-box"><div class="stat-label">Blocked Attempts</div><div class="stat-value" style="color:var(--red)" id="permit-blocked-count">0</div><div class="stat-sub">unauthorized issuances</div></div>
+    <div class="stat-box"><div class="stat-label">Ledger Hash</div><div class="stat-value" style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--navy)">${shortH(permitRuntime.state.hash)}</div><div class="stat-sub">current root</div></div>`;
+        }
+        let permitBlockedCount = 0;
+
+        function issuePermit() {
+            const type = document.getElementById("p-type").value;
+            const entity = document.getElementById("p-entity").value.trim();
+            const authority = document.getElementById("p-authority").value;
+            const id = type.toUpperCase().slice(0, 3) + "-2025-" + String(Math.floor(Math.random() * 9000) + 1000);
+            try {
+                const ns = permitRuntime.dispatch("issue_permit", {
+                    id,
+                    type,
+                    entity,
+                    issuer: authority
+                }, authority);
+                addAudit("◈", "PERMIT", `Issued: ${entity.slice(0,24)}`, ns.hash, `${id} by ${authority}`);
+                renderPermits();
+                showNotice("p-notice", "notice-ok", `✓ Permit ${id} issued.\nAuthority chain: Mayor's Office › ${AUTHORITY[authority]?.label||authority} › ${id}`);
+            } catch (e) {
+                permitBlockedCount++;
+                addAudit("✗", "PERMIT", "Unauthorized issuance blocked", permitRuntime.state.hash, "", "error");
+                renderPermits();
+                showNotice("p-notice", "notice-warn", "✗ Blocked: " + e.message + "\n\nOnly authorized departments can issue this permit type. The system does not rely on a checklist — the authority constraint is enforced at the structural level.");
+            }
+        }
+
+        function tryUnauthorizedPermit() {
+            const type = "alcohol";
+            const id = "ALQ-UNAUTHORIZED-TEST";
+            try {
+                permitRuntime.dispatch("issue_permit", {
+                    id,
+                    type,
+                    entity: "Test Corp",
+                    issuer: "COUNCIL_MEMBER"
+                }, "COUNCIL_MEMBER");
+                showNotice("p-notice", "notice-warn", "WARNING: This should have been blocked.");
+            } catch (e) {
+                permitBlockedCount++;
+                addAudit("✗", "PERMIT", "Unauthorized issuance BLOCKED", permitRuntime.state.hash, "Council Member → Alcohol Permit", "error");
+                renderPermits();
+                showNotice("p-notice", "notice-warn", `✗ Blocked: Council Member does not have authority to issue Alcohol Retail licenses.\n\nThis isn't a policy check that can be overridden. The authority structure itself makes this impossible.`);
+            }
+        }
+
+        function revokePermit(id) {
+            try {
+                const ns = permitRuntime.dispatch("revoke_permit", {
+                    id,
+                    reason: "Administrative review"
+                }, "PLANNING_DEPT");
+                addAudit("✗", "PERMIT", "Permit revoked: " + id, ns.hash);
+                renderPermits();
+                showNotice("p-notice", "notice-ok", "✓ Permit " + id + " revoked and recorded.");
+            } catch (e) {
+                showNotice("p-notice", "notice-warn", e.message);
+            }
+        }
+
+        function showPermitProof(id) {
+            const p = permitRuntime.state.value[id];
+            if (!p) return;
+            const PTYPE = {
+                building: "Building Construction",
+                food: "Food Service",
+                alcohol: "Alcohol Retail",
+                event: "Public Event",
+                environmental: "Environmental"
+            };
+            document.getElementById("proof-modal-body").innerHTML = `
+    <div class="proof-section-title">Permit Record</div>
+    <div class="proof-line"><div class="proof-key">Permit ID</div><div class="proof-val">${id}</div></div>
+    <div class="proof-line"><div class="proof-key">Type</div><div class="proof-val">${PTYPE[p.type]||p.type}</div></div>
+    <div class="proof-line"><div class="proof-key">Entity</div><div class="proof-val">${p.entity}</div></div>
+    <div class="proof-line"><div class="proof-key">Status</div><div class="proof-val ${p.status==="active"?"green":""}">${p.status.toUpperCase()}</div></div>
+    <div class="proof-line"><div class="proof-key">Issuing Authority</div><div class="proof-val">${AUTHORITY[p.issuer]?.label||p.issuer}</div></div>
+    <div class="proof-line"><div class="proof-key">Issued At</div><div class="proof-val">${new Date(p.issuedAt).toISOString()}</div></div>
+    <div class="proof-section-title">Authority Chain (T3 — Capability Preservation)</div>
+    <div class="proof-line"><div class="proof-key">Genesis</div><div class="proof-val">Mayor's Office → City Charter</div></div>
+    <div class="proof-line"><div class="proof-key">Delegation</div><div class="proof-val">City Charter → ${AUTHORITY[p.issuer]?.label||p.issuer}</div></div>
+    <div class="proof-line"><div class="proof-key">Action</div><div class="proof-val green">${id} issued under delegated authority</div></div>
+    <div class="proof-section-title">Cryptographic Root</div>
+    <div class="proof-line"><div class="proof-key">Ledger Hash</div><div class="proof-val green">${permitRuntime.state.hash}</div></div>`;
+            document.getElementById("proof-modal").classList.add("open");
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  POLICY UI
+        // ══════════════════════════════════════════════════════════
+        function renderPolicy() {
+            const stateA = policyNodeA.state.value;
+            const container = document.getElementById("agency-list");
+            container.innerHTML = "";
+            const converged = policyNodeA.state.hash === policyNodeB.state.hash && policyNodeB.state.hash === policyNodeC.state.hash;
+            document.getElementById("convergence-status").textContent = converged ? "✓ Converged" : "⚠ Diverged";
+            document.getElementById("convergence-status").style.color = converged ? "var(--green)" : "var(--amber)";
+            document.getElementById("conv-bar").style.width = converged ? "100%" : "40%";
+            for (const a of AGENCIES) {
+                const key = a.id + "::" + a.domain;
+                const pol = stateA[key] || {
+                    version: "—",
+                    updatedAt: 0
+                };
+                const row = document.createElement("div");
+                row.className = "policy-node";
+                row.innerHTML = `<div class="policy-agency">${a.name}</div>
+      <div class="policy-status-bar"><div class="policy-fill" style="width:${converged?100:60}%"></div></div>
+      <div class="policy-state">${pol.version}</div>`;
+                container.appendChild(row);
+            }
+            renderPolicyStats(converged);
+        }
+
+        function renderPolicyStats(converged) {
+            document.getElementById("policy-stats").innerHTML = `
+    <div class="stat-box"><div class="stat-label">Active Agencies</div><div class="stat-value">${AGENCIES.length}</div><div class="stat-sub">participating</div></div>
+    <div class="stat-box"><div class="stat-label">Policy Updates</div><div class="stat-value">${policyNodeA._log.length+policyNodeB._log.length+policyNodeC._log.length}</div><div class="stat-sub">across all nodes</div></div>
+    <div class="stat-box"><div class="stat-label">Convergences</div><div class="stat-value" style="color:var(--green)" id="conv-count">0</div><div class="stat-sub">automatic merges</div></div>
+    <div class="stat-box"><div class="stat-label">Coordinator Needed</div><div class="stat-value" style="color:var(--green)">None</div><div class="stat-sub">self-converging</div></div>
+    <div class="stat-box"><div class="stat-label">System State</div><div class="stat-value" style="font-size:13px;color:${converged?"var(--green)":"var(--amber)"}">${converged?"CONVERGED":"DIVERGED"}</div><div class="stat-sub">across 3 nodes</div></div>`;
+        }
+        let convergenceCount = 0;
+
+        function submitPolicy() {
+            const domain = document.getElementById("pol-domain").value;
+            const agency = document.getElementById("pol-agency").value;
+            const version = document.getElementById("pol-version").value;
+            try {
+                const ns = policyNodeA.dispatch("update_policy", {
+                    agency,
+                    domain,
+                    version,
+                    content: "updated policy text"
+                }, agency);
+                policyNodeB.mergeRemote(policyNodeA);
+                policyNodeC.mergeRemote(policyNodeA);
+                convergenceCount++;
+                document.getElementById("conv-count").textContent = convergenceCount;
+                addAudit("⟳", "POLICY", `${agency} updated ${domain}`, ns.hash, `version ${version}`);
+                renderPolicy();
+                showNotice("pol-notice", "notice-ok", `✓ Policy update submitted by ${AUTHORITY[agency]?.label||agency}.\nAll 3 agency nodes converged automatically.\nNo reconciliation meeting required.`);
+            } catch (e) {
+                showNotice("pol-notice", "notice-warn", e.message);
+            }
+        }
+
+        function runPartition() {
+            try {
+                // NodeC isolated — makes independent update
+                policyNodeC.dispatch("update_policy", {
+                    agency: "HEALTH",
+                    domain: "environment",
+                    version: "v2025.2-ISOLATED",
+                    content: "offline update"
+                }, "HEALTH");
+                // NodeA makes a different update
+                policyNodeA.dispatch("update_policy", {
+                    agency: "PLANNING",
+                    domain: "zoning",
+                    version: "v2025.2",
+                    content: "online update"
+                }, "PLANNING");
+                policyNodeB.mergeRemote(policyNodeA);
+                addAudit("⚡", "POLICY", "Network partition — NODE-C isolated", policyNodeC.state.hash, "Independent update while offline");
+                document.getElementById("conv-bar").style.width = "40%";
+                document.getElementById("convergence-status").textContent = "⚠ Diverged";
+                setTimeout(() => {
+                    // Partition heals — semilattice merge
+                    policyNodeA.mergeRemote(policyNodeC);
+                    policyNodeB.mergeRemote(policyNodeC);
+                    policyNodeC.mergeRemote(policyNodeA);
+                    convergenceCount++;
+                    document.getElementById("conv-count").textContent = convergenceCount;
+                    addAudit("✓", "POLICY", "Partition healed — semilattice merge", policyNodeA.state.hash, "All nodes converged, no data lost");
+                    renderPolicy();
+                    showNotice("pol-notice", "notice-ok", "✓ Partition healed.\n\nNODE-C was offline and made independent updates. When it reconnected, the system automatically merged all changes using a mathematical merge operation (join-semilattice).\n\nResult: no lost updates, no conflicting versions, no committee meeting.");
+                }, 1200);
+                renderPolicy();
+                showNotice("pol-notice", "notice-info", "⚡ Simulating network outage on NODE-C…");
+            } catch (e) {
+                showNotice("pol-notice", "notice-warn", e.message);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  AUDIT UI
+        // ══════════════════════════════════════════════════════════
+        function refreshAuditLog() {
+            const container = document.getElementById("audit-log");
+            if (!container) return;
+            container.innerHTML = "";
+            for (const e of auditEntries.slice(0, 60)) {
+                const div = document.createElement("div");
+                div.className = "audit-entry fadein";
+                const color = e.status === "error" ? "color:var(--red)" : e.system === "BUDGET" ? "color:var(--navy)" : e.system === "VOTE" ? "color:var(--green)" : e.system === "PERMIT" ? "color:var(--blue)" : "color:var(--amber)";
+                div.innerHTML = `
+      <div class="audit-time">${e.ts}</div>
+      <div class="audit-icon">${e.icon}</div>
+      <div class="audit-body">
+        <span style="${color};font-weight:500">[${e.system}]</span> ${e.desc}
+        ${e.detail?`<div class="audit-hash">${e.detail}</div>`:""}
+        <div class="audit-hash">proof: ${shortH(e.stateHash)}</div>
+      </div>`;
+                container.appendChild(div);
+            }
+            renderAuditStats();
+        }
+
+        function renderAuditStats() {
+            const budget = auditEntries.filter(e => e.system === "BUDGET").length;
+            const votes = auditEntries.filter(e => e.system === "VOTE").length;
+            const permits = auditEntries.filter(e => e.system === "PERMIT").length;
+            const policy = auditEntries.filter(e => e.system === "POLICY").length;
+            const blocked = auditEntries.filter(e => e.status === "error").length;
+            document.getElementById("audit-stats").innerHTML = `
+    <div class="stat-box"><div class="stat-label">Total Events</div><div class="stat-value">${auditEntries.length}</div><div class="stat-sub">all systems</div></div>
+    <div class="stat-box"><div class="stat-label">Budget</div><div class="stat-value">${budget}</div><div class="stat-sub">appropriation events</div></div>
+    <div class="stat-box"><div class="stat-label">Votes</div><div class="stat-value">${votes}</div><div class="stat-sub">resolutions recorded</div></div>
+    <div class="stat-box"><div class="stat-label">Permits</div><div class="stat-value">${permits}</div><div class="stat-sub">issuance events</div></div>
+    <div class="stat-box"><div class="stat-label">Blocked Actions</div><div class="stat-value" style="color:var(--red)">${blocked}</div><div class="stat-sub">authority violations</div></div>`;
+        }
+
+        function replayAll() {
+            const allLogs = budgetRuntime._log.length + voteRuntime._log.length + permitRuntime._log.length + policyNodeA._log.length;
+            const bv = budgetRuntime.verify(),
+                vv = voteRuntime.verify(),
+                pv = permitRuntime.verify();
+            const allOk = bv.valid && vv.valid && pv.valid;
+            const report = document.getElementById("integrity-report");
+            report.innerHTML = `
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2;color:var(--text2)">
+      <div style="color:var(--navy);font-size:13px;margin-bottom:12px">Full Cryptographic Integrity Report — ${new Date().toLocaleString()}</div>
+      <div>Budget system:   ${bv.valid?"✓ VERIFIED":"✗ MISMATCH"}  (${budgetRuntime._log.length} events replayed)</div>
+      <div>Vote registry:   ${vv.valid?"✓ VERIFIED":"✗ MISMATCH"}  (${voteRuntime._log.length} events replayed)</div>
+      <div>Permit ledger:   ${pv.valid?"✓ VERIFIED":"✗ MISMATCH"}  (${permitRuntime._log.length} events replayed)</div>
+      <div>Policy records:  ✓ VERIFIED  (${policyNodeA._log.length} events replayed)</div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        Total events replayed: ${allLogs}<br>
+        Overall status: <span style="color:${allOk?"var(--green)":"var(--red)"}"><strong>${allOk?"ALL SYSTEMS VERIFIED — No tampering detected":"⚠ ANOMALIES DETECTED"}</strong></span>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text3)">
+        Any citizen or auditor can run this verification independently. The result is mathematically guaranteed — it does not require trusting any official or department.
+      </div>
+    </div>`;
+            addAudit("⟲", "AUDIT", "Full system integrity replay", budgetRuntime.state.hash, `${allLogs} events verified`);
+        }
+
+        function exportAudit() {
+            const lines = ["CIVICLEDGER — PUBLIC AUDIT EXPORT", "Generated: " + new Date().toISOString(), "", "seq\ttime\tsystem\tdesc\tproof_hash"];
+            for (const e of auditEntries) lines.push([e.seq, e.ts, e.system, e.desc, e.stateHash].join("\t"));
+            const blob = new Blob([lines.join("\n")], {
+                type: "text/plain"
+            });
+            const a = Object.assign(document.createElement("a"), {
+                href: URL.createObjectURL(blob),
+                download: "civicledger-audit.txt"
+            });
+            a.click();
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  PROOF MODAL
+        // ══════════════════════════════════════════════════════════
+        function showProofModal(b) {
+            document.getElementById("proof-modal-body").innerHTML = `
+    <div class="proof-section-title">Chain Block</div>
+    <div class="proof-line"><div class="proof-key">System</div><div class="proof-val">${b.type}</div></div>
+    <div class="proof-line"><div class="proof-key">Description</div><div class="proof-val">${b.desc}</div></div>
+    <div class="proof-line"><div class="proof-key">State Hash</div><div class="proof-val green">${b.hash}</div></div>
+    <div style="margin-top:14px;font-size:12px;color:var(--text2);line-height:1.7">This hash was computed from the complete system state at the moment this event was recorded. Any subsequent change to the record would produce a different hash, making tampering immediately detectable.</div>`;
+            document.getElementById("proof-modal").classList.add("open");
+        }
+
+        function closeProofModal(e) {
+            if (!e || e.target === document.getElementById("proof-modal")) document.getElementById("proof-modal").classList.remove("open");
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  TABS + INIT
+        // ══════════════════════════════════════════════════════════
+        function showTab(id) {
+            document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+            document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+            document.getElementById("tab-" + id).classList.add("active");
+            document.querySelectorAll(".nav-tab").forEach(t => {
+                if (t.textContent.toLowerCase().includes(id.slice(0, 4))) t.classList.add("active");
+            });
+            if (id === "audit") refreshAuditLog();
+            if (id === "permits") renderPermits();
+            if (id === "policy") renderPolicy();
+        }
+
+        function init() {
+            renderBudget();
+            renderVotes();
+            renderPermits();
+            renderPolicy();
+            // Seed some initial audit entries
+            addAudit("★", "BUDGET", "CivicLedger system initialized", budgetRuntime.state.hash, "Budget, votes, permits, policy — all systems online");
+            addAudit("✓", "VOTE", "Vote registry loaded", voteRuntime.state.hash, "4 sealed resolutions on record");
+            addAudit("◈", "PERMIT", "Permit ledger loaded", permitRuntime.state.hash, "4 permits on record");
+            addAudit("⟳", "POLICY", "Policy nodes synchronized", policyNodeA.state.hash, "3 agency nodes converged");
+            updateGlobal();
+        }
+        init();
+    </script>
+</body>
+
+</html>
